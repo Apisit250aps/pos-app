@@ -7,14 +7,30 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'home',
+      path: '',
+      name: 'dashboard',
       component: DashboardLayout,
       children: [
         {
-          path: '',
-          name: 'home-view',
+          path: '/',
+          name: 'home',
           component: HomeView,
+          meta: {
+            requiresAuth: true,
+          },
+        },
+        {
+          path: '/inventory',
+          name: 'inventory',
+          component: () => import('../views/stock/InventoryView.vue'),
+          meta: {
+            requiresAuth: true,
+          },
+        },
+        {
+          path: '/inventory/input',
+          name: 'inventory-input',
+          component: () => import('../views/stock/InputInventoryView.vue'),
           meta: {
             requiresAuth: true,
           },

@@ -6,6 +6,18 @@ export interface IResponse<T = unknown> {
   data?: T // Replace with the actual response type
 }
 
+export interface IPagination {
+  page: number
+  limit: number
+  totalPages: number
+  totalDocs: number
+}
+
+export interface QueryString {
+  limit?: number
+  page?: number
+}
+
 export const baseUrl = 'http://localhost:3000'
 
 // Create an Axios instance

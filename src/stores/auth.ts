@@ -24,7 +24,6 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!token.value as boolean)
   const auth = computed(() => {
     if (token.value) {
-      console.log(jwtDecode(token.value as string))
       return jwtDecode(token.value as string)
     }
     return null as IUser | null

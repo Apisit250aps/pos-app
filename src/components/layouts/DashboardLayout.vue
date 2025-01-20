@@ -8,11 +8,11 @@
       <div class="navbar">
         <div class="navbar-start lg:hidden">
           <label for="my-drawer-2" class="btn btn-ghost drawer-button">
-            <i class="bx bx-menu"></i>
+            <i class="bx bx-menu-alt-left"></i>
           </label>
         </div>
         <div class="navbar-center lg:navbar-start">
-          <a class="btn btn-ghost text-xl">daisyUI</a>
+          <a class="btn btn-ghost text-xl">Cafe`</a>
         </div>
       </div>
       <RouterView />
@@ -23,11 +23,31 @@
         <!-- Sidebar content here -->
         <li class="menu-title">POS</li>
         <li>
-          <RouterLink to="/" active-class="active">Home</RouterLink>
+          <RouterLink :to="{ name: 'home' }" active-class="active">
+            <i class="bx bx-home"></i>
+            Home
+          </RouterLink>
+        </li>
+        <li class="menu-title">Stock</li>
+        <li>
+          <RouterLink :to="{ name: 'inventory' }" active-class="active">
+            <i class="bx bx-package"></i>
+            Inventory
+          </RouterLink>
+        </li>
+        <li>
+          <RouterLink :to="{ name: 'inventory-input' }" active-class="active">
+            <i class="bx bxs-package"></i>
+            Inventory Input
+          </RouterLink>
         </li>
       </ul>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+ul.menu > li {
+  margin-bottom: 3px;
+}
+</style>
