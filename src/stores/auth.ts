@@ -1,6 +1,4 @@
-import type { IResponse } from '@/libs/client'
-import api from '@/libs/client'
-import { AxiosError } from 'axios'
+import { fetchUser, userLogin } from '@/services/auth'
 import { jwtDecode } from 'jwt-decode'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
@@ -26,6 +24,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!token.value as boolean)
   const auth = computed(() => {
     if (token.value) {
+      console.log(jwtDecode(token.value as string))
       return jwtDecode(token.value as string)
     }
     return null as IUser | null
@@ -34,77 +33,35 @@ export const useAuthStore = defineStore('auth', () => {
 
   token.value = localStorage.getItem('auth_token') as string
 
-  const fetchUser = async () => {
+  const authentication = async () => {
     try {
-      const response = await api.get<IResponse<{ auth: IUser }>>('/auth')
-      console.log(response)
-      if (response.data.success) {
-        user.value = response.data.data!.auth
-      }
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        return {
-          success: false,
-          message: error.response?.data.message,
+      if (token.value) {
+        const { data, success } = await fetchUser()
+        if (success) {
+          user.value = data!.auth
         }
       }
-      return {
-        success: false,
-        message: 'An error occurred while fetching user data.',
-      }
+    } catch (error) {
+      console.error(error)
+      throw new Error('Server error: ' + error)
     }
   }
-  fetchUser()
-
-  const register = async ({
+  authentication()
+  const login = async ({
     username,
     password,
-  }: Partial<IUser & { password: string }>): Promise<IResponse> => {
+  }: Partial<IUser & { password: string }>): Promise<{ success: boolean; message: string }> => {
     try {
-      const response = await api.post('/auth/register', {
-        username,
-        password,
-      })
-      if (response.data.success) {
-        localStorage.setItem('auth_token', response.data.data.token)
-        token.value = response.data.data.token
+      const { data, success, message } = await userLogin({ username, password })
+      if (!success) {
+        return { message, success }
       }
-      return response.data
+      localStorage.setItem('auth_token', data!.token as string)
+      token.value = data!.token
+      return { message, success }
     } catch (error) {
-      if (error instanceof AxiosError) {
-        return {
-          success: false,
-          message: error.response?.data.message,
-        }
-      }
-      return {
-        success: false,
-        message: 'An error occurred while registering.',
-      }
-    }
-  }
-  const login = async ({ username, password }: Partial<IUser & { password: string }>) => {
-    try {
-      const response = await api.post<IResponse<{ token: string }>>('/auth/login', {
-        username,
-        password,
-      })
-      if (response.data.success) {
-        localStorage.setItem('auth_token', response.data.data!.token as string)
-        token.value = response.data.data!.token
-      }
-      return response.data
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        return {
-          success: false,
-          message: error.response?.data.message,
-        }
-      }
-      return {
-        success: false,
-        message: 'An error occurred while logging in.',
-      }
+      console.error(error)
+      throw new Error('Server error: ' + error)
     }
   }
   return {
@@ -112,7 +69,7 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     user,
     auth,
-    register,
     login,
+    authentication,
   }
 })

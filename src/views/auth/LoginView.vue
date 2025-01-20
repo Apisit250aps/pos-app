@@ -47,7 +47,9 @@
 </template>
 
 <script setup lang="ts">
+import router from '@/router'
 import { useAuthStore } from '@/stores/auth'
+import Swal from 'sweetalert2'
 import { ref } from 'vue'
 
 const auth = useAuthStore()
@@ -60,10 +62,14 @@ const handleLogin = async (e: Event) => {
     e.preventDefault()
     const { success, message } = await auth.login({ ...form.value })
     if (!success) {
-      alert(message)
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: message,
+      })
       return
     }
-    console.log('Logged in successfully!')
+    router.push('/')
   } catch (error) {
     console.error('Error logging in:', error)
   }
