@@ -12,15 +12,15 @@ const router = createRouter({
       component: DashboardLayout,
       children: [
         {
-          path: '/',
-          name: 'home',
+          path: '/pos',
+          name: 'pos',
           component: HomeView,
           meta: {
             requiresAuth: true,
           },
         },
         {
-          path: '/inventory',
+          path: 'inventory',
           name: 'inventory',
           component: () => import('../views/stock/InventoryView.vue'),
           meta: {
@@ -28,9 +28,25 @@ const router = createRouter({
           },
         },
         {
-          path: '/inventory/input',
+          path: 'inventory/input',
           name: 'inventory-input',
           component: () => import('../views/stock/InputInventoryView.vue'),
+          meta: {
+            requiresAuth: true,
+          },
+        },
+        {
+          path: 'menu',
+          name: 'menu',
+          component: () => import('../views/product/MenuView.vue'),
+          meta: {
+            requiresAuth: true,
+          },
+        },
+        {
+          path: 'category',
+          name: 'category',
+          component: () => import('../views/product/CategoryView.vue'),
           meta: {
             requiresAuth: true,
           },
@@ -52,9 +68,9 @@ router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next('/login')
-  } else {
-    next()
   }
+  if (to.name === 'dashboard') next('/pos')
+  next()
 })
 
 export default router

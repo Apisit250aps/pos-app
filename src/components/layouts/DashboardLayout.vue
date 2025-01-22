@@ -23,7 +23,7 @@
         <!-- Sidebar content here -->
         <li class="menu-title">POS</li>
         <li>
-          <RouterLink :to="{ name: 'home' }" active-class="active">
+          <RouterLink :to="{ name: 'pos' }" active-class="active" :view-transition="true">
             <i class="bx bx-home"></i>
             Home
           </RouterLink>
@@ -39,6 +39,19 @@
           <RouterLink :to="{ name: 'inventory-input' }" active-class="active">
             <i class="bx bxs-package"></i>
             Inventory Input
+          </RouterLink>
+        </li>
+        <li class="menu-title">Product</li>
+        <li>
+          <RouterLink :to="{ name: 'menu' }" active-class="active">
+            <i class="bx bx-coffee"></i>
+            Menu
+          </RouterLink>
+        </li>
+        <li>
+          <RouterLink :to="{ name: 'category' }" active-class="active">
+            <i class="bx bx-library"></i>
+            Categories
           </RouterLink>
         </li>
       </ul>
