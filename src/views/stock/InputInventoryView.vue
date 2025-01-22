@@ -5,7 +5,9 @@ import { createInventory } from '@/services/inventory'
 import type { IInventory } from '@/stores/inventory'
 import Swal from 'sweetalert2'
 import { computed, ref } from 'vue'
+import CardContent from '@/components/displays/CardContent.vue'
 
+//
 const onEdit = ref<boolean>(false)
 const inputItems = ref<IInventory[]>([])
 const item = ref<IInventory>({
@@ -117,12 +119,8 @@ const submitInventory = async () => {
 </script>
 
 <template>
-  <div class="card">
-    <div class="card-body">
-      <div class="card-title flex justify-between">
-        <h3>Inventory Input</h3>
-        <div class="card-actions"></div>
-      </div>
+  <CardContent title="Inventory Input">
+    <template #content>
       <div class="grid grid-cols-1 gap-3">
         <form @submit="addItem">
           <div class="grid grid-cols-2 gap-3">
@@ -183,18 +181,15 @@ const submitInventory = async () => {
           </div>
         </form>
       </div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-body">
-      <div class="card-title flex justify-between">
-        <h3>Item List</h3>
-        <div class="card-actions">
-          <button @click="submitInventory()" class="btn">
-            <i class="bx bx-plus"></i> Add New Item
-          </button>
-        </div>
-      </div>
+    </template>
+  </CardContent>
+  <CardContent title="Item List">
+    <template #actions>
+      <button @click="submitInventory()" class="btn">
+        <i class="bx bx-plus"></i> Add New Item
+      </button>
+    </template>
+    <template #content>
       <div class="overflow-x-auto">
         <table class="table">
           <thead>
@@ -228,6 +223,6 @@ const submitInventory = async () => {
           </tbody>
         </table>
       </div>
-    </div>
-  </div>
+    </template>
+  </CardContent>
 </template>
