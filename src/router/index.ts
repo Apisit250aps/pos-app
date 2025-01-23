@@ -44,7 +44,15 @@ const router = createRouter({
           },
         },
         {
-          path: 'category',
+          path: 'menu/add',
+          name: 'menu-add',
+          component: () => import('../views/product/MenuAddView.vue'),
+          meta: {
+            requiresAuth: true,
+          },
+        },
+        {
+          path: 'menu/category',
           name: 'category',
           component: () => import('../views/product/CategoryView.vue'),
           meta: {

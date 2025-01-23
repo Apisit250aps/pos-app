@@ -1,4 +1,8 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import { useUIStore } from '@/stores/ui'
+
+const ui = useUIStore()
+</script>
 
 <template>
   <div class="drawer lg:drawer-open">
@@ -13,6 +17,18 @@
         </div>
         <div class="navbar-center lg:navbar-start">
           <a class="btn btn-ghost text-xl">Cafe`</a>
+        </div>
+        <div class="navbar-end">
+          <label class="swap swap-rotate btn btn-ghost">
+            <!-- this hidden checkbox controls the state -->
+            <input type="checkbox" class="theme-controller" value="dark" v-model="ui.theme" />
+
+            <!-- sun icon -->
+            <i class="bx bx-sun swap-off"></i>
+
+            <!-- moon icon -->
+            <i class="bx bx-moon swap-on"></i>
+          </label>
         </div>
       </div>
       <RouterView />
@@ -44,8 +60,14 @@
         <li class="menu-title">Product</li>
         <li>
           <RouterLink :to="{ name: 'menu' }" active-class="active">
-            <i class="bx bx-coffee"></i>
+            <i class="bx bx-book-heart"></i>
             Menu
+          </RouterLink>
+        </li>
+        <li>
+          <RouterLink :to="{ name: 'menu-add' }" active-class="active">
+            <i class="bx bx-book-add"></i>
+            Menu Add
           </RouterLink>
         </li>
         <li>

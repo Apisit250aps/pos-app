@@ -31,5 +31,6 @@ export const useInventoryStore = defineStore('inventory', () => {
 
   return {
     inventories,
+    setInventory
   }
 })

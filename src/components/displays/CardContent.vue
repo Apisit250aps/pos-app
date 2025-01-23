@@ -15,7 +15,9 @@ const { title } = defineProps<{
           <slot name="actions"></slot>
         </div>
       </div>
-      <slot name="content"></slot>
+      <div class="">
+        <slot name="content"></slot>
+      </div>
     </div>
   </div>
 </template>

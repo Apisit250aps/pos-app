@@ -2,12 +2,13 @@
 import InputField from '@/components/forms/inputs/InputField.vue'
 import { isEmpty, isZero } from '@/libs/data/validations'
 import { createInventory } from '@/services/inventory'
-import type { IInventory } from '@/stores/inventory'
+import { useInventoryStore, type IInventory } from '@/stores/inventory'
 import Swal from 'sweetalert2'
 import { computed, ref } from 'vue'
 import CardContent from '@/components/displays/CardContent.vue'
 
 //
+const inventory = useInventoryStore()
 const onEdit = ref<boolean>(false)
 const inputItems = ref<IInventory[]>([])
 const item = ref<IInventory>({
@@ -111,6 +112,7 @@ const submitInventory = async () => {
           text: 'Inventory has been submitted successfully!',
           icon: 'success',
         })
+        inventory.setInventory()
         inputItems.value = []
       }
     }
