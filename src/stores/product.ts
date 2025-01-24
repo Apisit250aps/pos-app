@@ -7,7 +7,7 @@ export interface IMenu {
   _id: string
   name: string
   price: number
-  category?: string
+  category?: string | ICategory
   description?: string
   image?: string | File
   status: boolean
@@ -30,7 +30,6 @@ export const useProductStore = defineStore('products', () => {
     totalPages: 0,
     totalDocs: 0,
   })
-
   const loadMenu = async function () {
     const { data, success, pagination: pg, message } = await getMenus({})
     menus.value = data!
@@ -39,7 +38,6 @@ export const useProductStore = defineStore('products', () => {
       console.error(message)
     }
   }
-
   const loadCategories = async function (): Promise<void> {
     const { data } = await getMenuCategories()
     categories.value = data!

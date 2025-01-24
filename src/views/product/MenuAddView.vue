@@ -1,41 +1,41 @@
 <template>
   <CardContent title="Add Menu">
     <template #content>
-      <div class="grid lg:grid-cols-3 grid-cols-1">
+      <div class="grid lg:grid-cols-3 grid-cols-1 gap-4">
         <div class="preview lg:block flex justify-center">
-          <img
-            v-if="imageUrl"
-            :src="imageUrl"
-            :alt="imageUrl ? 'Image Preview' : 'Upload Image Placeholder'"
-            class="artboard image-preview"
-          />
-          <div class="artboard image-placeholder" v-else>1:1</div>
+          <img v-if="imageUrl" :src="imageUrl" alt="Image Preview" class="artboard image-preview" />
+          <div v-else class="artboard image-placeholder">1:1</div>
         </div>
-        <!-- File Input -->
         <div class="lg:col-span-2">
-          <form class="grid grid-cols-1" @submit="handleSubmit">
+          <form @submit.prevent="handleSubmit" class="grid grid-cols-1 gap-4">
             <InputFile
               type="file"
               @change="onFileChange"
-              accept="image/jpeg, image/png image/jpg"
+              accept="image/jpeg, image/png, image/jpg"
               label-text="Image"
               v-model="form.image"
               required
             />
-            <InputField label-text="Menu Name" autofocus v-model="form.name" required />
-            <label className="form-control w-full">
-              <div className="label">
-                <span className="label-text">Category</span>
-              </div>
-              <select className="select select-bordered" v-model="form.category" required>
-                <option disabled selected>Select</option>
-                <option v-for="(item, index) in product.categories" :key="index" :value="item._id">
-                  {{ item.name }}
+            <InputField
+              label-text="Menu Name"
+              v-model="form.name"
+              :value="form.name"
+              required
+              autofocus
+            />
+            <div class="form-control w-full">
+              <label class="label">
+                <span class="label-text">Category</span>
+              </label>
+              <select class="select select-bordered" v-model="form.category" required>
+                <option disabled value="">Select</option>
+                <option v-for="category in categories" :key="category._id" :value="category._id">
+                  {{ category.name }}
                 </option>
               </select>
-            </label>
+            </div>
             <InputField type="number" label-text="Price" v-model.number="form.price" required />
-            <InputField label-text="Description" v-model="form.description" required />
+            <InputField label-text="Description" v-model="form.description" />
             <div class="text-end mt-6">
               <button type="submit" class="btn btn-outline">Add to Menu</button>
             </div>
@@ -46,34 +46,25 @@
   </CardContent>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
+import { ref } from 'vue'
+import { storeToRefs } from 'pinia'
+import Swal from 'sweetalert2'
+
 import CardContent from '@/components/displays/CardContent.vue'
 import InputField from '@/components/forms/inputs/InputField.vue'
 import InputFile from '@/components/forms/inputs/InputFile.vue'
 
 import { createMenu } from '@/services/menu'
-import { useProductStore, type IMenu } from '@/stores/product'
-import Swal from 'sweetalert2'
-import { ref } from 'vue'
+import { useProductStore } from '@/stores/product'
+import type { IMenu } from '@/stores/product'
 
-const imageUrl = ref<string | null>(null)
+// Store setup
 const product = useProductStore()
-function onFileChange(event: Event) {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  if (file) {
-    menu_image.value = file
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      if (typeof e.target?.result === 'string') {
-        imageUrl.value = e.target.result
-      }
-    }
-    reader.readAsDataURL(file)
-  } else {
-    imageUrl.value = null
-  }
-}
+const { categories } = storeToRefs(product)
+
+// Reactive state
+const imageUrl = ref<string | null>(null)
 const menu_image = ref<File | null>(null)
 const form = ref<Partial<IMenu>>({
   name: '',
@@ -83,42 +74,67 @@ const form = ref<Partial<IMenu>>({
   image: '',
 })
 
-const handleSubmit = async (event: Event) => {
-  event.preventDefault()
+// File change handler
+const onFileChange = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
 
-  const { success, message } = await createMenu(form.value as IMenu)
-  if (success) {
+  if (file) {
+    menu_image.value = file
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      imageUrl.value = e.target?.result as string
+    }
+    reader.readAsDataURL(file)
+  } else {
+    imageUrl.value = null
+    menu_image.value = null
+  }
+}
+
+// Submit handler
+const handleSubmit = async () => {
+  form.value.image = menu_image.value as File
+
+  try {
+    const { success, message } = await createMenu(form.value as IMenu)
+
     Swal.fire({
-      title: 'Menu Added Successfully',
+      title: success ? 'Menu Added Successfully' : 'Error',
       text: message,
-      icon: 'success',
+      icon: success ? 'success' : 'error',
       confirmButtonText: 'Okay',
     })
-  } else {
+
+    if (success) {
+      // Reset form
+      imageUrl.value = null
+      menu_image.value = null
+      form.value = {
+        name: '',
+        category: '',
+        price: 0,
+        description: '',
+        image: '',
+      }
+
+      // Reload menu
+      product.loadMenu()
+    }
+  } catch (error) {
+    console.error(error)
     Swal.fire({
       title: 'Error',
-      text: message,
+      text: 'An unexpected error occurred',
       icon: 'error',
       confirmButtonText: 'Okay',
     })
   }
-  form.value = {
-    name: '',
-    category: '',
-    price: 0,
-    description: '',
-    image: '',
-  }
-  product.loadMenu()
 }
 </script>
 
 <style scoped>
-input[type='file'] {
-  margin: 20px 0;
-}
-
-.preview img.image-preview {
+.image-preview {
   width: 100%;
   max-width: 320px;
   aspect-ratio: 1 / 1;
@@ -128,7 +144,7 @@ input[type='file'] {
   border-radius: 8px;
 }
 
-.preview .image-placeholder {
+.image-placeholder {
   width: 320px;
   height: 320px;
   display: flex;
