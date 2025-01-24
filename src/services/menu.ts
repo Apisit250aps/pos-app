@@ -4,7 +4,11 @@ import { AxiosError } from 'axios'
 
 export async function createMenu(menu: IMenu): Promise<IResponse<IMenu>> {
   try {
-    const response = await api.post<IResponse<IMenu>>('/menu', menu)
+    const response = await api.post<IResponse<IMenu>>('/menu', menu,{
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
     const { success, message, data } = response.data
     return { success, message, data }
   } catch (error) {

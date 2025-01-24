@@ -1,5 +1,5 @@
 import type { IPagination } from '@/libs/client'
-import { getMenuCategories } from '@/services/menu'
+import { getMenuCategories, getMenus } from '@/services/menu'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -9,7 +9,7 @@ export interface IMenu {
   price: number
   category?: string
   description?: string
-  image?: string
+  image?: string | File
   status: boolean
 }
 
@@ -31,17 +31,24 @@ export const useProductStore = defineStore('products', () => {
     totalDocs: 0,
   })
 
-  const loadMenu = function ({ data, pagination: pg }: { data: IMenu[]; pagination: IPagination }) {
-    menus.value = data
-    pagination.value = pg
+  const loadMenu = async function () {
+    const { data, success, pagination: pg, message } = await getMenus({})
+    menus.value = data!
+    pagination.value = pg!
+    if (!success) {
+      console.error(message)
+    }
   }
 
   const loadCategories = async function (): Promise<void> {
     const { data } = await getMenuCategories()
     categories.value = data!
   }
+  const onInit = async function () {
+    await Promise.all([loadMenu(), loadCategories()])
+  }
 
-  loadCategories()
+  onInit()
 
   return {
     menus,
