@@ -8,7 +8,7 @@
     <td>
       <div class="flex items-center gap-3">
         <div class="avatar">
-          <div class="mask mask-squircle h-12 w-12">
+          <div class="mask mask-squircle h-24 w-24">
             <img :src="useImage(menu.image)" />
           </div>
         </div>
@@ -18,7 +18,7 @@
       </div>
     </td>
     <td>
-      <span class="badge badge-ghost badge-sm">{{ menu.price }}</span>
+      <span class="badge badge-ghost badge-sm">{{ menu.price }} ฿</span>
     </td>
     <td>{{ typeof menu.category === 'object' ? menu.category?.name : menu.category }}</td>
     <th>

@@ -41,7 +41,7 @@ const ui = useUIStore()
         <li>
           <RouterLink :to="{ name: 'pos' }" active-class="active" :view-transition="true">
             <i class="bx bx-home"></i>
-            Home
+            POS
           </RouterLink>
         </li>
         <li class="menu-title">Stock</li>

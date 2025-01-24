@@ -9,7 +9,7 @@ export interface IMenu {
   price: number
   category?: string | ICategory
   description?: string
-  image?: string | File
+  image: string | File
   status: boolean
 }
 
