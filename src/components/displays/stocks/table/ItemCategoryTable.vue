@@ -55,8 +55,8 @@ import ItemCategoryForm from '../form/ItemCategoryForm.vue'
 import { useInventoryStore, type IItemCategory } from '@/stores/inventory'
 import { ref } from 'vue'
 import Swal from 'sweetalert2'
-import { deleteItemCategory } from '@/services/inventory'
 const inventory = useInventoryStore()
+
 const data = ref<IItemCategory | null>(null)
 const openEditDialog = (category: IItemCategory) => {
   data.value = category
@@ -73,13 +73,12 @@ const onDelete = (id: string) => {
     confirmButtonText: 'Yes, delete it!',
   }).then(async (result) => {
     if (result.isConfirmed) {
-      const { success, message } = await deleteItemCategory(id)
+      const { success, message } = await inventory.removeCategory(id)
       Swal.fire({
         icon: success ? 'success' : 'error',
         title: success ? 'Success' : 'Failed',
         text: message,
       })
-      inventory.setInventory()
     }
   })
 }

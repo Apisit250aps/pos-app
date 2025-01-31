@@ -15,11 +15,11 @@
 <script setup lang="ts">
 import { closeModal } from '@/components'
 import InputField from '@/components/forms/inputs/InputField.vue'
-import { addItemCategory, updateItemCategory } from '@/services/inventory'
 import { useInventoryStore, type IItemCategory } from '@/stores/inventory'
 import Swal from 'sweetalert2'
 import { reactive, ref, watch } from 'vue'
 const inventory = useInventoryStore()
+const { addCategory, editCategory } = inventory
 const isLoading = ref(false)
 const form = reactive<{
   _id: string | undefined
@@ -56,7 +56,7 @@ const submitForm = async (e: Event) => {
     isLoading.value = true
     if (form._id) {
       // edit
-      const { success, message } = await updateItemCategory(form as IItemCategory)
+      const { success, message } = await editCategory(form as IItemCategory)
       closeModal('item-category-edit')
       Swal.fire({
         icon: success ? 'success' : 'error',
@@ -64,7 +64,7 @@ const submitForm = async (e: Event) => {
         text: message,
       })
     } else {
-      const { success, message } = await addItemCategory(form as IItemCategory)
+      const { success, message } = await addCategory(form as IItemCategory)
       closeModal('item-category-create')
       Swal.fire({
         icon: success ? 'success' : 'error',
@@ -78,7 +78,6 @@ const submitForm = async (e: Event) => {
   } catch (error) {
     console.error(error)
   } finally {
-    await inventory.setInventory()
     isLoading.value = false
   }
 }
