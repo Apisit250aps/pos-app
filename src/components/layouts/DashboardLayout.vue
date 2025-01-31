@@ -57,6 +57,12 @@ const ui = useUIStore()
             Inventory Input
           </RouterLink>
         </li>
+        <li>
+          <RouterLink :to="{ name: 'inventory-category' }" active-class="active">
+            <i class="bx bx-library"></i>
+            Inventory Category
+          </RouterLink>
+        </li>
         <li class="menu-title">Product</li>
         <li>
           <RouterLink :to="{ name: 'menu' }" active-class="active">

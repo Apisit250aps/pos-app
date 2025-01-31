@@ -1,3 +1,129 @@
+<template>
+  <CardContent title="Inventory Input">
+    <template #content>
+      <div class="grid grid-cols-1 gap-3">
+        <form @submit="addItem">
+          <div class="grid grid-cols-3 gap-3">
+            <InputField placeholder="Name" label-text="Name" v-model="item.itemName" />
+            <div class="form-control w-full">
+              <label class="label">
+                <span class="label-text">Category</span>
+              </label>
+              <select class="select select-bordered" v-model="item.category" required>
+                <option disabled value="">Select</option>
+                <option
+                  v-for="category in inventory.categories"
+                  :key="category._id"
+                  :value="category._id"
+                >
+                  {{ category.name }}
+                </option>
+              </select>
+            </div>
+            <InputField
+              placeholder="Cost"
+              label-text="Cost"
+              type="number"
+              min="0"
+              v-model.number="item.cost"
+            />
+          </div>
+          <div class="grid grid-cols-3 gap-3">
+            <InputField
+              placeholder="Item Quantity"
+              label-text="Item Quantity"
+              type="number"
+              min="0"
+              additional-label="on package"
+              v-model.number="item.itemQuantity"
+            />
+            <InputField
+              placeholder="Total Quantity"
+              label-text="Quantity"
+              type="number"
+              min="0"
+              v-model="totalQuantity"
+              readOnly
+            />
+            <InputField placeholder="Unit" label-text="Unit" type="text" v-model="item.unit" />
+          </div>
+          <div class="grid grid-cols-3 gap-3">
+            <InputField
+              placeholder="Stock"
+              label-text="Stock"
+              type="number"
+              min="0"
+              v-model.number="item.stock"
+            />
+            <InputField
+              placeholder="Min Stock"
+              label-text="Min Stock"
+              type="number"
+              min="0"
+              v-model.number="item.minStock"
+            />
+            <InputField
+              placeholder="Stock Unit"
+              label-text="Stock Unit"
+              type="text"
+              v-model="item.stockUnit"
+            />
+          </div>
+          <div class="text-end mt-3">
+            <button type="submit" class="btn btn-primary" :class="{ 'btn-outline': onEdit }">
+              {{ onEdit ? 'Update Item' : 'Add Item' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </template>
+  </CardContent>
+  <CardContent title="Item List">
+    <template #actions>
+      <button @click="submitInventory()" class="btn">
+        <i class="bx bx-plus"></i> Add New Item
+      </button>
+    </template>
+    <template #content>
+      <div class="overflow-x-auto">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Cost</th>
+              <th>Quantity</th>
+              <th>Item Quantity</th>
+              <th>Stock</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(inv, index) in inputItems" :key="index" class="hover">
+              <th>{{ index + 1 }}</th>
+              <td>{{ inv.itemName }}</td>
+              <td>{{ getCategoryName(inv.category as string) }}</td>
+              <td>{{ inv.cost }}</td>
+              <td>{{ inv.quantity }} {{ inv.unit }}</td>
+              <td>{{ inv.itemQuantity }} {{ inv.unit }}</td>
+              <td>{{ inv.stock }} {{ inv.stockUnit }}</td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-primary btn-outline me-2" @click="setEdit(inv)">
+                  <i class="bx bx-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-error btn-outline" @click="removeItem(inv)">
+                  <i class="bx bx-x"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </template>
+  </CardContent>
+</template>
+
 <script lang="ts" setup>
 import InputField from '@/components/forms/inputs/InputField.vue'
 import { isEmpty, isZero } from '@/libs/data/validations'
@@ -13,6 +139,7 @@ const onEdit = ref<boolean>(false)
 const inputItems = ref<IInventory[]>([])
 const item = ref<IInventory>({
   itemName: '',
+  category: '',
   cost: 0,
   itemQuantity: 0,
   quantity: 0,
@@ -23,6 +150,7 @@ const item = ref<IInventory>({
 } as IInventory)
 const defaultForm = ref<IInventory>({
   itemName: '',
+  category: '',
   cost: 0,
   itemQuantity: 0,
   quantity: 0,
@@ -118,113 +246,9 @@ const submitInventory = async () => {
     }
   })
 }
-</script>
 
-<template>
-  <CardContent title="Inventory Input">
-    <template #content>
-      <div class="grid grid-cols-1 gap-3">
-        <form @submit="addItem">
-          <div class="grid grid-cols-2 gap-3">
-            <InputField placeholder="Name" label-text="Name" v-model="item.itemName" />
-            <InputField
-              placeholder="Cost"
-              label-text="Cost"
-              type="number"
-              min="0"
-              v-model.number="item.cost"
-            />
-          </div>
-          <div class="grid grid-cols-3 gap-3">
-            <InputField
-              placeholder="Item Quantity"
-              label-text="Item Quantity"
-              type="number"
-              min="0"
-              additional-label="on package"
-              v-model.number="item.itemQuantity"
-            />
-            <InputField
-              placeholder="Total Quantity"
-              label-text="Quantity"
-              type="number"
-              min="0"
-              v-model="totalQuantity"
-              readOnly
-            />
-            <InputField placeholder="Unit" label-text="Unit" type="text" v-model="item.unit" />
-          </div>
-          <div class="grid grid-cols-3 gap-3">
-            <InputField
-              placeholder="Stock"
-              label-text="Stock"
-              type="number"
-              min="0"
-              v-model.number="item.stock"
-            />
-            <InputField
-              placeholder="Min Stock"
-              label-text="Min Stock"
-              type="number"
-              min="0"
-              v-model.number="item.minStock"
-            />
-            <InputField
-              placeholder="Stock Unit"
-              label-text="Stock Unit"
-              type="text"
-              v-model="item.stockUnit"
-            />
-          </div>
-          <div class="text-end mt-3">
-            <button type="submit" class="btn btn-primary" :class="{ 'btn-outline': onEdit }">
-              {{ onEdit ? 'Update Item' : 'Add Item' }}
-            </button>
-          </div>
-        </form>
-      </div>
-    </template>
-  </CardContent>
-  <CardContent title="Item List">
-    <template #actions>
-      <button @click="submitInventory()" class="btn">
-        <i class="bx bx-plus"></i> Add New Item
-      </button>
-    </template>
-    <template #content>
-      <div class="overflow-x-auto">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Name</th>
-              <th>Cost</th>
-              <th>Quantity</th>
-              <th>Item Quantity</th>
-              <th>Stock</th>
-              <th class="text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(inv, index) in inputItems" :key="index" class="hover">
-              <th>{{ index + 1 }}</th>
-              <td>{{ inv.itemName }}</td>
-              <td>{{ inv.cost }}</td>
-              <td>{{ inv.quantity }} {{ inv.unit }}</td>
-              <td>{{ inv.itemQuantity }} {{ inv.unit }}</td>
-              <td>{{ inv.stock }} {{ inv.stockUnit }}</td>
-              <td class="text-center">
-                <button class="btn btn-sm btn-primary btn-outline me-2" @click="setEdit(inv)">
-                  <i class="bx bx-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-error btn-outline" @click="removeItem(inv)">
-                  <i class="bx bx-x"></i>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </template>
-  </CardContent>
-</template>
+const getCategoryName = (id: string) => {
+  const category = inventory.categories.find((c) => c._id === id)
+  return category ? category.name : ''
+}
+</script>

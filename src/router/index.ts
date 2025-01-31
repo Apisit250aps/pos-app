@@ -36,6 +36,14 @@ const router = createRouter({
           },
         },
         {
+          path: 'inventory/category',
+          name: 'inventory-category',
+          component: () => import('../views/stock/InventoryCategoryView.vue'),
+          meta: {
+            requiresAuth: true,
+          },
+        },
+        {
           path: 'menu',
           name: 'menu',
           component: () => import('../views/product/MenuView.vue'),

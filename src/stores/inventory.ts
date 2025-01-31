@@ -1,10 +1,11 @@
-import { fetchInventory } from '@/services/inventory';
+import { fetchInventory, fetchItemCategory } from '@/services/inventory'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-export interface IInventory extends Document {
+export interface IInventory {
   _id: string
   itemName: string
+  category: IItemCategory | string
   cost: number
   itemQuantity: number
   quantity: number
@@ -12,15 +13,46 @@ export interface IInventory extends Document {
   stock: number
   stockUnit: string
   minStock: number
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface IItemCategory {
+  _id: string
+  name: string
+  description?: string
+  status: boolean
+  createdAt: Date
+  updatedAt: Date
 }
 
 export const useInventoryStore = defineStore('inventory', () => {
   const inventories = ref<IInventory[]>([])
+  const categories = ref<IItemCategory[]>([])
+
+  const loadInventory = async () => {
+    try {
+      const { data } = await fetchInventory({ limit: 10, page: 1 })
+      inventories.value = data!
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
+
+  const loadCategories = async () => {
+    try {
+      const { data } = await fetchItemCategory()
+      categories.value = data!
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
 
   const setInventory = async () => {
     try {
-      const { data } = await fetchInventory({})
-      inventories.value = data!
+      await Promise.all([loadInventory(), loadCategories()])
     } catch (error) {
       console.error(error)
       throw error
@@ -31,6 +63,7 @@ export const useInventoryStore = defineStore('inventory', () => {
 
   return {
     inventories,
-    setInventory
+    categories,
+    setInventory,
   }
 })
