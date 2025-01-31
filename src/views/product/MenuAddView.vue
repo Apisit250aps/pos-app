@@ -55,12 +55,12 @@ import CardContent from '@/components/displays/CardContent.vue'
 import InputField from '@/components/forms/inputs/InputField.vue'
 import InputFile from '@/components/forms/inputs/InputFile.vue'
 
-import { createMenu } from '@/services/menu'
 import { useProductStore } from '@/stores/product'
 import type { IMenu } from '@/stores/product'
 
 // Store setup
 const product = useProductStore()
+const { addMenus } = product
 const { categories } = storeToRefs(product)
 
 // Reactive state
@@ -97,7 +97,7 @@ const handleSubmit = async () => {
   form.value.image = menu_image.value as File
 
   try {
-    const { success, message } = await createMenu(form.value as IMenu)
+    const { success, message } = await addMenus(form.value as IMenu)
 
     Swal.fire({
       title: success ? 'Menu Added Successfully' : 'Error',
@@ -117,9 +117,6 @@ const handleSubmit = async () => {
         description: '',
         image: '',
       }
-
-      // Reload menu
-      product.loadMenu()
     }
   } catch (error) {
     console.error(error)

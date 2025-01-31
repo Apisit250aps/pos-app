@@ -19,7 +19,7 @@ export async function createMenu(menu: IMenu): Promise<IResponse<IMenu>> {
   }
 }
 
-export async function getMenus({
+export async function fetchMenus({
   page,
   limit,
 }: {
@@ -80,7 +80,7 @@ export async function createMenuCategory(category: ICategory): Promise<IResponse
   }
 }
 
-export async function getMenuCategories(): Promise<IResponse<ICategory[]>> {
+export async function fetchMenuCategories(): Promise<IResponse<ICategory[]>> {
   try {
     const response = await api.get<IResponse<ICategory[]>>('/menu/category')
     const { success, message, data } = response.data
