@@ -11,6 +11,7 @@ import {
 } from '@/services/menu'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import type { IInventory } from './inventory';
 
 export interface IMenu {
   _id: string
@@ -28,6 +29,13 @@ export interface ICategory {
   description?: string
   status: boolean
   menuCount?: number
+}
+
+export interface IRecipe {
+  menu: string | IMenu
+  item: string | IInventory
+  quantity: number
+  unit: string
 }
 
 export const useProductStore = defineStore('products', () => {
@@ -130,7 +138,7 @@ export const useProductStore = defineStore('products', () => {
   }
 
   const onInit = async function () {
-    await Promise.all([fetchMenuCategories(), getMenus()])
+    await Promise.all([getCategories(), getMenus()])
   }
 
   onInit()

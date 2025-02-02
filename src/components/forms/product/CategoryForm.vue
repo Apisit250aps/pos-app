@@ -16,11 +16,11 @@
 import { ref, watch } from 'vue'
 import InputField from '../inputs/InputField.vue'
 import { useProductStore, type ICategory } from '@/stores/product'
-import { createMenuCategory, updateMenuCategory } from '@/services/menu'
 import Swal from 'sweetalert2'
 import { closeModal } from '@/components'
 //
 const product = useProductStore()
+const { addCategories, editCategories } = product
 const isLoading = ref<boolean>(false)
 const form = ref<Partial<ICategory>>({
   name: '',
@@ -47,10 +47,10 @@ const handleSubmit = async function (e: Event) {
   try {
     let response
     if (form.value._id) {
-      response = await updateMenuCategory(form.value as ICategory)
+      response = await editCategories(form.value as ICategory)
       closeModal('category-edit')
     } else {
-      response = await createMenuCategory(form.value as ICategory)
+      response = await addCategories(form.value as ICategory)
       closeModal('category-create')
     }
     if (response.success) {
@@ -70,7 +70,7 @@ const handleSubmit = async function (e: Event) {
       name: '',
       description: '',
     }
-    product.loadCategories()
+
     isLoading.value = false
   } catch (error) {
     console.error(error)
